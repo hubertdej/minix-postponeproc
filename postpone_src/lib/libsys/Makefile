@@ -50,6 +50,7 @@ SRCS+=  \
 	sys_mcontext.c \
 	sys_memset.c \
 	sys_physcopy.c \
+	sys_postpone.c \
 	sys_privctl.c \
 	sys_profbuf.c \
 	sys_runctl.c \

@@ -129,6 +129,8 @@ struct proc {
 #if DEBUG_TRACE
   int p_schedules;
 #endif
+
+  struct timer p_timer;
 };
 
 #endif /* __ASSEMBLY__ */
@@ -159,6 +161,7 @@ struct proc {
 				   should be enqueued at the end of some run
 				   queue again */
 #define RTS_BOOTINHIBIT	0x10000	/* not ready until VM has made it */
+#define RTS_POSTPONED	0x20000
 
 /* A process is runnable iff p_rts_flags == 0. */
 #define rts_f_is_runnable(flg)	((flg) == 0)

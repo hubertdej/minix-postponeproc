@@ -13,6 +13,7 @@ static void pid_psinfo(int slot);
 static void pid_cmdline(int slot);
 static void pid_environ(int slot);
 static void pid_map(int slot);
+static void pid_delay(int slot);
 
 /* The files that are dynamically created in each PID directory. The data field
  * contains each file's read function. Subdirectories are not yet supported.
@@ -22,6 +23,7 @@ struct file pid_files[] = {
 	{ "cmdline",	REG_ALL_MODE,	(data_t) pid_cmdline	},
 	{ "environ",	REG_ALL_MODE,	(data_t) pid_environ	},
 	{ "map",	REG_ALL_MODE,	(data_t) pid_map	},
+	{ "delay",	REG_ALL_MODE,	(data_t) pid_delay	},
 	{ NULL,		0,		(data_t) NULL		}
 };
 
@@ -380,4 +382,26 @@ static void pid_map(int slot)
 		if (dump_regions(slot) != 0)
 			return;
 	}
+}
+
+/*===========================================================================*
+ *				pid_delay				     *
+ *===========================================================================*/
+static void pid_delay(int slot) {
+  if (!RTS_ISSET(&proc[slot], RTS_POSTPONED)) {
+    return;
+  }
+
+  clock_t exp_time = proc[slot].p_timer.tmr_exp_time;
+  if (exp_time == TMR_NEVER) {
+    buf_printf("inf\n");
+    return;
+  }
+
+  clock_t uptime;
+  if (getuptime(&uptime) != OK) {
+    return;
+  }
+
+  buf_printf("%d\n", (exp_time - uptime) * 1000 / sys_hz());
 }

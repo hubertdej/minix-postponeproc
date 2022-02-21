@@ -495,3 +495,23 @@ char *brk_addr;
 	_brksize = brk_addr;
 	return 0;
 }
+
+/*===========================================================================*
+ *				do_postpone				     *
+ *===========================================================================*/
+int do_postpone() {
+  int proc_id = m_in.m1_i1;
+  int interval = m_in.m1_i2;
+
+  if (interval < -1 || interval > 10000) {
+    return EINVAL;
+  }
+
+  struct mproc *rmp = find_proc(proc_id);
+  if (rmp == NULL) {
+    return ESRCH;
+  }
+
+  int ticks = interval == -1 ? TMR_NEVER : micros_to_ticks(interval * 1000);
+  return sys_postpone(rmp->mp_endpoint, ticks);
+}
